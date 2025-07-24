@@ -1,9 +1,11 @@
 package linebot
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/inkxk/bad-bot/app"
+	"github.com/inkxk/bad-bot/constant"
 	"github.com/line/line-bot-sdk-go/v8/linebot"
 	"go.uber.org/zap"
 )
@@ -42,27 +44,12 @@ func (h *Handler) Callback(ctx app.Context) {
 			case *linebot.TextMessage:
 				text := strings.TrimSpace(message.Text)
 
-				// check prefix !
-				if strings.HasPrefix(text, "!") {
-					switch text {
-					case "!ตีแบดกัน":
-						_, err = h.Bot.ReplyMessage(
-							event.ReplyToken,
-							linebot.NewTextMessage("ยินดีรับใช้ 🏸"),
-						).Do()
-						if err != nil {
-							h.Logger.Sugar().Errorf("Reply message error: %v", err)
-						}
-					default:
-						// case unknow command !
-						_, err = h.Bot.ReplyMessage(
-							event.ReplyToken,
-							linebot.NewTextMessage("ขออภัย ไม่เข้าใจคำสั่ง: "+text),
-						).Do()
-						if err != nil {
-							h.Logger.Sugar().Errorf("Unknown command error: %v", err)
-						}
-					}
+				// check prefix
+				switch {
+				case strings.HasPrefix(text, "!ตีแบดกัน"):
+					h.handleBadmintonCommand(event, text)
+				default:
+					// do nothing
 				}
 			}
 
@@ -70,4 +57,61 @@ func (h *Handler) Callback(ctx app.Context) {
 	}
 
 	ctx.OK(nil)
+}
+
+func (h *Handler) handleBadmintonCommand(event *linebot.Event, text string) {
+	args := strings.TrimSpace(strings.TrimPrefix(text, "!ตีแบดกัน"))
+
+	if args == "" {
+		_, err := h.Bot.ReplyMessage(
+			event.ReplyToken,
+			linebot.NewTextMessage(fmt.Sprintf(constant.DEFAULT_MESSAGE, "วันเสาร์", "N")),
+		).Do()
+
+		if err != nil {
+			h.Logger.Sugar().Errorf("Reply default message error: %v", err)
+		}
+	} else {
+		// get parts
+		partsRaw := strings.Split(args, ",")
+		var parts []string
+		for _, p := range partsRaw {
+			trimmed := strings.TrimSpace(p)
+			if trimmed != "" {
+				parts = append(parts, trimmed)
+			}
+		}
+
+		if len(parts) < 2 {
+			_, err := h.Bot.ReplyMessage(
+				event.ReplyToken,
+				linebot.NewTextMessage(`มึงบอกวันที่ กับ จำนวนคอร์ดด้วยสิ เช่น '!ตีแบดกัน, วันเสาร์ ที่ 26 ก.ค., 2'`),
+			).Do()
+			if err != nil {
+				h.Logger.Sugar().Errorf("Invalid input error: %v", err)
+			}
+			return
+		} else if len(parts) > 2 {
+			_, err := h.Bot.ReplyMessage(
+				event.ReplyToken,
+				linebot.NewTextMessage(`พิมเหี้ยไรเยอะแยะ`),
+			).Do()
+			if err != nil {
+				h.Logger.Sugar().Errorf("Invalid input error: %v", err)
+			}
+			return
+		}
+
+		date := strings.TrimSpace(parts[0])
+		countNumber := strings.TrimSpace(parts[1])
+
+		_, err := h.Bot.ReplyMessage(
+			event.ReplyToken,
+			linebot.NewTextMessage(fmt.Sprintf(constant.DEFAULT_MESSAGE, date, countNumber)),
+		).Do()
+
+		if err != nil {
+			h.Logger.Sugar().Errorf("Reply fallback error: %v", err)
+		}
+	}
 }

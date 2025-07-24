@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"gitdev.devops.krungthai.com/mini-project-challenge/team070/backend/logger"
 	"github.com/go-playground/form"
+	"github.com/inkxk/bad-bot/logger"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
@@ -112,6 +112,6 @@ func (r *Router) Use(middleware ...echo.MiddlewareFunc) {
 
 func (r *Router) HealthCheck(middleware ...echo.MiddlewareFunc) {
 	r.GET("/health", func(c Context) {
-		c.OK(Success(nil))
+		c.OK(map[string]string{"status": "ok"})
 	})
 }

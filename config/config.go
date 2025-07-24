@@ -31,6 +31,6 @@ type HTTPServer struct {
 }
 
 type Line struct {
-	LineChannelSecret     string `env:"LINE_CHANNEL_SECRET"`
-	LineChanneAccessToken string `env:"LINE_CHANNEL_ACCESS_TOKEN"`
+	LineChannelSecret      string `env:"LINE_CHANNEL_SECRET"`
+	LineChannelAccessToken string `env:"LINE_CHANNEL_ACCESS_TOKEN"`
 }

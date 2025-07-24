@@ -36,7 +36,7 @@ func main() {
 	r.Use(zap.ZapLoggerMiddleware(logger))
 
 	// create instance line bot
-	botClient, err := lineSdk.New(cfg.Line.LineChannelSecret, cfg.Line.LineChanneAccessToken)
+	botClient, err := lineSdk.New(cfg.Line.LineChannelSecret, cfg.Line.LineChannelAccessToken)
 	if err != nil {
 		logger.Sugar().Fatalf("Failed to create LINE bot: %v", err)
 	}

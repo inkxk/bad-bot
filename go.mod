@@ -3,7 +3,6 @@ module github.com/inkxk/bad-bot
 go 1.24.4
 
 require (
-	gitdev.devops.krungthai.com/mini-project-challenge/team070/backend v0.0.0-20250722132900-9b6eaa0898d5
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/labstack/echo/v4 v4.13.4
